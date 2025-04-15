@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Triggered') {
             steps {
-                echo '🎉 Jenkins CI/CD 已被 GitHub Push 成功触发!'
+                echo '🎉 1Jenkins CI/CD 已被 GitHub Push 成功触发!'
             }
         }
     }
