@@ -25,15 +25,16 @@ pipeline {
             steps {
                 echo '🚀 开始远程执行 JMeter 测试脚本...'
                 sh '''
-                    ssh -o StrictHostKeyChecking=no root@114.132.198.29 "
+                    ssh -o StrictHostKeyChecking=no root@114.132.198.29 '
                         export JAVA_HOME=/athena/jdk/jdk1.8.0_371
                         export PATH=$JAVA_HOME/bin:$PATH
+                        rm -rf /athena/testjmeter001/report_test &&
                         /athena/Jmeter/apache-jmeter-5.5/bin/jmeter \
                         -n \
                         -t /athena/testjmeter001/ProductionPerfMall.jmx \
                         -l /athena/testjmeter001/result.jtl \
                         -e -o /athena/testjmeter001/report_test
-                    "
+                    '
                 '''
             }
         }
