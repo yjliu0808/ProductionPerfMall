@@ -8,16 +8,17 @@ pipeline {
     stages {
         stage('拉取代码') {
             steps {
-                echo '✅ 代码已拉取成功!！'
+                echo '✅ 代码已拉取成功！'
             }
         }
 
         stage('执行 JMeter 压测') {
             steps {
                 echo '🚀 开始远程执行 JMeter 测试脚本...'
-                // 推荐使用标准多行字符串，不使用反斜杠换行
                 sh '''
                     ssh -o StrictHostKeyChecking=no root@114.132.198.29 "
+                        export JAVA_HOME=/athena/jdk/jdk1.8.0_371
+                        export PATH=\\$JAVA_HOME/bin:\\$PATH
                         /athena/Jmeter/apache-jmeter-5.5/bin/jmeter \
                         -n \
                         -t /athena/testjmeter001/ProductionPerfMall.jmx \
