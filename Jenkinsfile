@@ -2,13 +2,24 @@ pipeline {
     agent any
 
     triggers {
-        githubPush()   // 👈 加上这一段
+        githubPush()  // GitHub Push 触发
     }
 
     stages {
-        stage('Triggered') {
+        stage('Run JMeter on Remote') {
             steps {
-                echo '🎉 1Jenkins CI/CD 已被 GitHub Push 成功触发!'
+                script {
+                    // SSH 命令远程执行 JMeter
+                    sh """
+                        ssh root@114.132.198.29 '
+                            /athena/Jmeter/apache-jmeter-5.5/bin/jmeter \
+                            -n \
+                            -t /athena/testjmeter001/ProductionPerfMall.jmx \
+                            -l /athena/testjmeter001/result.jtl \
+                            -e -o /athena/testjmeter001/report_test
+                        '
+                    """
+                }
             }
         }
     }
