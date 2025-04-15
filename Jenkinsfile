@@ -14,7 +14,7 @@ pipeline {
 
         stage('执行 JMeter 压测') {
             steps {
-                echo '🚀 开始远程执行 JMeter 测试脚本...'
+                echo '🚀 开始远程执行 JMeter 测试脚本..'
                 sh """
                     ssh root@114.132.198.29 '
                         /athena/Jmeter/apache-jmeter-5.5/bin/jmeter \\
