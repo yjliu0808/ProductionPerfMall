@@ -12,13 +12,22 @@ pipeline {
             }
         }
 
+        stage('上传 JMeter 脚本') {
+            steps {
+                echo '📤 上传 JMeter 脚本到远程服务器...'
+                sh '''
+                    scp -o StrictHostKeyChecking=no ProductionPerfMall.jmx root@114.132.198.29:/athena/testjmeter001/
+                '''
+            }
+        }
+
         stage('执行 JMeter 压测') {
             steps {
                 echo '🚀 开始远程执行 JMeter 测试脚本...'
                 sh '''
                     ssh -o StrictHostKeyChecking=no root@114.132.198.29 "
                         export JAVA_HOME=/athena/jdk/jdk1.8.0_371
-                        export PATH=\\$JAVA_HOME/bin:\\$PATH
+                        export PATH=$JAVA_HOME/bin:$PATH
                         /athena/Jmeter/apache-jmeter-5.5/bin/jmeter \
                         -n \
                         -t /athena/testjmeter001/ProductionPerfMall.jmx \
@@ -31,7 +40,7 @@ pipeline {
 
         stage('完成') {
             steps {
-                echo '🎉 JMeter 性能测试执行完成！请查看远程报告：/athena/testjmeter001/report_test'
+                echo '🎉 JMeter 性能测试执行完成！请查看远程报告路径。'
             }
         }
     }
