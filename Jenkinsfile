@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('拉取代码') {
             steps {
-                echo '✅ 代码已拉取成功！'
+                echo '✅ 代码已拉取成功!！'
             }
         }
 
