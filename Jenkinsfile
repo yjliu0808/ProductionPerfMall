@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        githubPush()   // GitHub push 自动触发
+        githubPush() // GitHub push 自动触发
     }
 
     stages {
@@ -14,22 +14,23 @@ pipeline {
 
         stage('执行 JMeter 压测') {
             steps {
-                echo '🚀 开始远程执行 JMeter 测试脚本'
-                sh """
-                    ssh root@114.132.198.29 '
-                        /athena/Jmeter/apache-jmeter-5.5/bin/jmeter \\
-                        -n \\
-                        -t /athena/testjmeter001/ProductionPerfMall.jmx \\
-                        -l /athena/testjmeter001/result.jtl \\
+                echo '🚀 开始远程执行 JMeter 测试脚本...'
+                // 推荐使用标准多行字符串，不使用反斜杠换行
+                sh '''
+                    ssh -o StrictHostKeyChecking=no root@114.132.198.29 "
+                        /athena/Jmeter/apache-jmeter-5.5/bin/jmeter \
+                        -n \
+                        -t /athena/testjmeter001/ProductionPerfMall.jmx \
+                        -l /athena/testjmeter001/result.jtl \
                         -e -o /athena/testjmeter001/report_test
-                    '
-                """
+                    "
+                '''
             }
         }
 
         stage('完成') {
             steps {
-                echo '🎉 JMeter 性能测试执行完成！请查看远程报告路径。'
+                echo '🎉 JMeter 性能测试执行完成！请查看远程报告：/athena/testjmeter001/report_test'
             }
         }
     }
