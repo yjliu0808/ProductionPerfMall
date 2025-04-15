@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        githubPush()  // GitHub Push 触发
+        githubPush()  // GitHub Push 触1发
     }
 
     stages {
