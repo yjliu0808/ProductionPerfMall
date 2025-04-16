@@ -82,16 +82,17 @@ pipeline {
         }
 
         stage('展示报告') {
-            steps {
-                publishHTML([
-                    reportDir: 'ResultHtml',
-                    reportFiles: 'index.html',
-                    reportName: '📊 JMeter 性能测试报告',
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true
-                ])
-            }
-        }
+        steps {
+        publishHTML([
+            reportDir: 'ResultHtml',
+            reportFiles: 'index.html',
+            reportName: '📊 JMeter 性能测试报告',
+            allowMissing: false,  // ✅ 必须加
+            alwaysLinkToLastBuild: true,
+            keepAll: true
+        ])
+    }
+}
 
         stage('完成') {
             steps {
