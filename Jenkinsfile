@@ -10,7 +10,6 @@ pipeline {
         JMETER_OUTPUT  = "${JMETER_BASEDIR}/result.jtl"
         JMETER_REPORT  = "${JMETER_BASEDIR}/ResultHtml"
         JMETER_PLUGIN  = "${JMETER_HOME}/lib/ext/jmeter-plugins-casutg-2.9.jar"
-        ALLURE_RESULTS = "${JMETER_BASEDIR}/allure-results"
     }
 
     triggers {
@@ -59,15 +58,14 @@ pipeline {
                         export PATH=$JAVA_HOME/bin:$PATH
 
                         echo "🧹 清理旧报告..."
-                        rm -rf ${JMETER_REPORT} ${ALLURE_RESULTS}
+                        rm -rf ${JMETER_REPORT}
                         rm -f ${JMETER_OUTPUT}
 
-                        echo "📊 执行 JMeter 压测（带 Allure 支持）..."
-                        ${JMETER_HOME}/bin/jmeter \
-                            -n -t ${JMETER_SCRIPT} \
-                            -l ${JMETER_OUTPUT} \
-                            -e -o ${JMETER_REPORT} \
-                            -Jallure.results.directory=${ALLURE_RESULTS}
+                        echo "📊 执行 JMeter 压测..."
+                        ${JMETER_HOME}/bin/jmeter \\
+                            -n -t ${JMETER_SCRIPT} \\
+                            -l ${JMETER_OUTPUT} \\
+                            -e -o ${JMETER_REPORT}
                     '
                 """
             }
@@ -85,38 +83,30 @@ pipeline {
 
         stage('展示 HTML 报告') {
             steps {
-                publishHTML([
-                    reportDir: 'ResultHtml',
-                    reportFiles: 'index.html',
-                    reportName: '📊 JMeter HTML 性能报告',
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true
-                ])
-            }
-        }
+                script {
+                    def reportName = '📊 JMeter HTML 性能报告'
+                    def reportDir = 'ResultHtml'
+                    def reportFile = 'index.html'
 
-        stage('拉取 Allure 报告原始数据') {
-            steps {
-                echo '📥 拉取 Allure 原始结果到 Jenkins 本地...'
-                sh '''
-                    rm -rf allure-results
-                    scp -r -o StrictHostKeyChecking=no ${REMOTE_HOST}:${ALLURE_RESULTS} ./allure-results
-                '''
-            }
-        }
+                    publishHTML(target: [
+                        reportDir: reportDir,
+                        reportFiles: reportFile,
+                        reportName: reportName,
+                        reportTitles: 'JMeter 执行详情报告',
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        includes: '**/*.html, **/*.js, **/*.css, **/*.png, **/*.jpg'
+                    ])
 
-        stage('展示 Allure 报告') {
-            steps {
-                allure includeProperties: false,
-                       jdk: '',
-                       results: [[path: 'allure-results']]
+                    echo "🔗 HTML 报告链接：${env.BUILD_URL}HTML_20Report"
+                }
             }
         }
 
         stage('完成') {
             steps {
-                echo "🎉 JMeter 性能测试完成，HTML + Allure 报告已集成 Jenkins 页面。"
+                echo "🎉 JMeter 性能测试完成，HTML 报告已集成 Jenkins 页面。"
             }
         }
     }
